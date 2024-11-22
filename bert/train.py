@@ -11,6 +11,7 @@ import pytreebank
 
 from config import Config
 from data import SSTDataset
+from eval import evaluate_model
 
 # Training Function
 def train_model(model, train_dataloader, val_dataloader, optimizer, criterion, device, epochs):
@@ -68,34 +69,15 @@ def train_model(model, train_dataloader, val_dataloader, optimizer, criterion, d
         if val_accuracy > best_val_accuracy:
             best_val_accuracy = val_accuracy
             torch.save(model.state_dict(), 'best_bert_sst5_model.pth')
+
+            # torch.save({
+            #     'epoch': epoch,
+            #     'model_state_dict': model.state_dict(),
+            #     'optimizer_state_dict': optimizer.state_dict(),
+            #     'loss': loss,}, 'best_bert_sst5_model.pth')
     
     return model
 
-# Evaluation Function
-def evaluate_model(model, test_dataloader, device):
-    model.eval()
-    test_predictions = []
-    test_true_labels = []
-    
-    with torch.no_grad():
-        for batch in test_dataloader:
-            input_ids = batch['input_ids'].to(device)
-            attention_mask = batch['attention_mask'].to(device)
-            labels = batch['labels'].to(device)
-            
-            outputs = model(
-                input_ids, 
-                attention_mask=attention_mask
-            )
-            
-            predictions = torch.argmax(outputs.logits, dim=1)
-            test_predictions.extend(predictions.cpu().numpy())
-            test_true_labels.extend(labels.cpu().numpy())
-    
-    print("Classification Report:")
-    print(classification_report(test_true_labels, test_predictions))
-    
-    return test_predictions, test_true_labels
 
 def main():
 

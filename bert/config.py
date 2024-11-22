@@ -9,3 +9,4 @@ class Config:
     LEARNING_RATE = 1e-5
     EPOCHS = 5
     DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    CHECKPOINT = './best_bert_sst5_model.pth'
